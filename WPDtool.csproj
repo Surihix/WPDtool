@@ -43,7 +43,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="WPDtool\IMGBClasses\IMGBRepack2.cs" />
     <Compile Include="WPDtool\IMGBClasses\IMGBRepack.cs" />
     <Compile Include="WPDtool\IMGBClasses\IMGBVariables.cs" />
     <Compile Include="WPDtool\IMGBClasses\DDSMethods.cs" />

@@ -17,8 +17,7 @@ namespace WPDtool.SupportClasses
         public enum ActionEnums
         {
             u,
-            r,
-            rb
+            r
         }
 
 

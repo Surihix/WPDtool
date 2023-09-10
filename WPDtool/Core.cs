@@ -9,9 +9,9 @@ namespace WPDtool
     {
         static void Main(string[] args)
         {
-            if (args.Length > 2)
+            if (args.Length < 2)
             {
-                ErrorExit("Error: Enough arguments not specified\nMust be: '-u', '-r', or '-rb' and 'WPDfileOrFolder'");
+                ErrorExit("Error: Enough arguments not specified\nMust be: WPDtool.exe '-u' or '-r' and 'WPD file or unpacked WPD folder'");
             }
 
             var actionEnumString = args[0].Replace("-", "");
@@ -35,12 +35,11 @@ namespace WPDtool
                     break;
 
                 case ActionEnums.r:
-                case ActionEnums.rb:
                     if (!Directory.Exists(inWPDfileOrFolder))
                     {
                         ErrorExit("Error: Specified directory to repack, does not exist");
                     }
-                    WPD.RepackWPD(inWPDfileOrFolder, convertedAction);
+                    WPD.RepackWPD(inWPDfileOrFolder);
                     break;
 
                 default:

@@ -47,14 +47,14 @@ namespace WPDtool.IMGBClasses
                     // Type 4 is Other
                     case 0:
                     case 4:
-                        RepackClassicType(imgHeaderBlockFile, extractedImgbDir, imgbVars, imgbStream);
+                        RepackClassicType1(imgHeaderBlockFile, extractedImgbDir, imgbVars, imgbStream);
                         break;
 
                     // Cubemap type 
                     // Type 5 is for PS3
                     case 1:
                     case 5:
-                        RepackCubemapType(imgHeaderBlockFile, extractedImgbDir, imgbVars, imgbStream);
+                        RepackCubemapType1(imgHeaderBlockFile, extractedImgbDir, imgbVars, imgbStream);
                         break;
 
                     // Stacked type (LR only)
@@ -66,7 +66,7 @@ namespace WPDtool.IMGBClasses
                             Console.WriteLine("Detected more than one mip in this stack type image. skipped to next file.");
                             return;
                         }
-                        RepackStackType(imgHeaderBlockFile, extractedImgbDir, imgbVars, imgbStream);
+                        RepackStackType1(imgHeaderBlockFile, extractedImgbDir, imgbVars, imgbStream);
                         break;
                 }
             }
@@ -75,7 +75,7 @@ namespace WPDtool.IMGBClasses
 
 
         // Classic type
-        static void RepackClassicType(string imgHeaderBlockFile, string extractImgbDir, IMGB imgbVars, FileStream imgbStream)
+        static void RepackClassicType1(string imgHeaderBlockFile, string extractImgbDir, IMGB imgbVars, FileStream imgbStream)
         {
             var imgHeaderBlockFileName = Path.GetFileName(imgHeaderBlockFile);
             var currentDDSfile = Path.Combine(extractImgbDir, imgHeaderBlockFileName + ".dds");
@@ -146,7 +146,7 @@ namespace WPDtool.IMGBClasses
 
 
         // Cubemap type
-        static void RepackCubemapType(string imgHeaderBlockFile, string extractImgbDir, IMGB imgbVars, FileStream imgbStream)
+        static void RepackCubemapType1(string imgHeaderBlockFile, string extractImgbDir, IMGB imgbVars, FileStream imgbStream)
         {
             var imgHeaderBlockFileName = Path.GetFileName(imgHeaderBlockFile);
 
@@ -227,7 +227,7 @@ namespace WPDtool.IMGBClasses
 
 
         // Stack type
-        static void RepackStackType(string extractImgbDir, string imgHeaderBlockFile, IMGB imgbVars, FileStream imgbStream)
+        static void RepackStackType1(string extractImgbDir, string imgHeaderBlockFile, IMGB imgbVars, FileStream imgbStream)
         {
             var imgHeaderBlockFileName = Path.GetFileName(imgHeaderBlockFile);
 

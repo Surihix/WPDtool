@@ -10,7 +10,7 @@ namespace WPDtool.WPDClasses
 {
     internal partial class WPD
     {
-        public static void RepackWPD(string inWPDExtractedDir, ActionEnums actionEnum)
+        public static void RepackWPD(string inWPDExtractedDir)
         {
             var inWPDExtractedDirName = Path.GetDirectoryName(inWPDExtractedDir);
 
@@ -139,16 +139,7 @@ namespace WPDtool.WPDClasses
                                         {
                                             if (Directory.Exists(inWPDExtractedIMGBDir))
                                             {
-                                                switch (actionEnum)
-                                                {
-                                                    case ActionEnums.r:
-                                                        IMGB.RepackIMGBType1(currentFile, outWPDImgbFile, inWPDExtractedIMGBDir);
-                                                        break;
-
-                                                    case ActionEnums.rb:
-                                                        IMGB.RepackIMGBType2(currentFile, outWPDImgbFile, inWPDExtractedIMGBDir);
-                                                        break;
-                                                }
+                                                IMGB.RepackIMGBType1(currentFile, outWPDImgbFile, inWPDExtractedIMGBDir);
                                             }
                                         }
 
