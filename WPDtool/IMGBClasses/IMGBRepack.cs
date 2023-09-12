@@ -8,7 +8,7 @@ namespace WPDtool.IMGBClasses
 {
     internal partial class IMGB
     {
-        public static void RepackIMGBType1(string imgHeaderBlockFile, string outImgbFile, string extractedImgbDir)
+        public static void RepackIMGBType1(string imgHeaderBlockFile, string outImgbFile, string extractedIMGBdir)
         {
             var gtexPos = GetGTEXChunkPos(imgHeaderBlockFile);
             if (gtexPos == 0)
@@ -47,14 +47,14 @@ namespace WPDtool.IMGBClasses
                     // Type 4 is Other
                     case 0:
                     case 4:
-                        RepackClassicType1(imgHeaderBlockFile, extractedImgbDir, imgbVars, imgbStream);
+                        RepackClassicType1(imgHeaderBlockFile, extractedIMGBdir, imgbVars, imgbStream);
                         break;
 
                     // Cubemap type 
                     // Type 5 is for PS3
                     case 1:
                     case 5:
-                        RepackCubemapType1(imgHeaderBlockFile, extractedImgbDir, imgbVars, imgbStream);
+                        RepackCubemapType1(imgHeaderBlockFile, extractedIMGBdir, imgbVars, imgbStream);
                         break;
 
                     // Stacked type (LR only)
@@ -66,7 +66,7 @@ namespace WPDtool.IMGBClasses
                             Console.WriteLine("Detected more than one mip in this stack type image. skipped to next file.");
                             return;
                         }
-                        RepackStackType1(imgHeaderBlockFile, extractedImgbDir, imgbVars, imgbStream);
+                        RepackStackType1(imgHeaderBlockFile, extractedIMGBdir, imgbVars, imgbStream);
                         break;
                 }
             }
@@ -75,10 +75,10 @@ namespace WPDtool.IMGBClasses
 
 
         // Classic type
-        static void RepackClassicType1(string imgHeaderBlockFile, string extractImgbDir, IMGB imgbVars, FileStream imgbStream)
+        static void RepackClassicType1(string imgHeaderBlockFile, string extractedIMGBdir, IMGB imgbVars, FileStream imgbStream)
         {
             var imgHeaderBlockFileName = Path.GetFileName(imgHeaderBlockFile);
-            var currentDDSfile = Path.Combine(extractImgbDir, imgHeaderBlockFileName + ".dds");
+            var currentDDSfile = Path.Combine(extractedIMGBdir, imgHeaderBlockFileName + ".dds");
 
             if (!File.Exists(currentDDSfile))
             {
@@ -146,18 +146,18 @@ namespace WPDtool.IMGBClasses
 
 
         // Cubemap type
-        static void RepackCubemapType1(string imgHeaderBlockFile, string extractImgbDir, IMGB imgbVars, FileStream imgbStream)
+        static void RepackCubemapType1(string imgHeaderBlockFile, string extractedIMGBdir, IMGB imgbVars, FileStream imgbStream)
         {
             var imgHeaderBlockFileName = Path.GetFileName(imgHeaderBlockFile);
 
-            var isMissingAnImg = CheckImgFilesBatch(6, extractImgbDir, imgHeaderBlockFileName, imgbVars);
+            var isMissingAnImg = CheckImgFilesBatch(6, extractedIMGBdir, imgHeaderBlockFileName, imgbVars);
             if (isMissingAnImg)
             {
                 Console.WriteLine("Missing one or more cubemap type image files. skipped to next file.");
                 return;
             }
 
-            var isAllValidImg = CheckExtImgInfoBatch(6, extractImgbDir, imgHeaderBlockFileName, imgbVars);
+            var isAllValidImg = CheckExtImgInfoBatch(6, extractedIMGBdir, imgHeaderBlockFileName, imgbVars);
             if (!isAllValidImg)
             {
                 return;
@@ -174,7 +174,7 @@ namespace WPDtool.IMGBClasses
 
                     for (int c = 0; c < 6; c++)
                     {
-                        var currentDDSfile = Path.Combine(extractImgbDir, imgHeaderBlockFileName + imgbVars.ImgType + cubeMapCount + ".dds");
+                        var currentDDSfile = Path.Combine(extractedIMGBdir, imgHeaderBlockFileName + imgbVars.ImgType + cubeMapCount + ".dds");
 
                         using (FileStream ddsCbMapStream = new FileStream(currentDDSfile, FileMode.Open, FileAccess.Read))
                         {
@@ -227,18 +227,18 @@ namespace WPDtool.IMGBClasses
 
 
         // Stack type
-        static void RepackStackType1(string extractImgbDir, string imgHeaderBlockFile, IMGB imgbVars, FileStream imgbStream)
+        static void RepackStackType1(string extractedIMGBdir, string imgHeaderBlockFile, IMGB imgbVars, FileStream imgbStream)
         {
             var imgHeaderBlockFileName = Path.GetFileName(imgHeaderBlockFile);
 
-            var isMissingAnImg = CheckImgFilesBatch(imgbVars.ImgDepth, extractImgbDir, imgHeaderBlockFileName, imgbVars);
+            var isMissingAnImg = CheckImgFilesBatch(imgbVars.ImgDepth, extractedIMGBdir, imgHeaderBlockFileName, imgbVars);
             if (isMissingAnImg)
             {
                 Console.WriteLine("Missing one or more stack type image files. skipped to next file.");
                 return;
             }
 
-            var isAllValidImg = CheckExtImgInfoBatch(imgbVars.ImgDepth, extractImgbDir, imgHeaderBlockFileName, imgbVars);
+            var isAllValidImg = CheckExtImgInfoBatch(imgbVars.ImgDepth, extractedIMGBdir, imgHeaderBlockFileName, imgbVars);
             if (!isAllValidImg)
             {
                 return;
@@ -265,7 +265,7 @@ namespace WPDtool.IMGBClasses
 
                     for (int s = 0; s < imgbVars.ImgDepth; s++)
                     {
-                        var currentDDSfile = Path.Combine(extractImgbDir, imgHeaderBlockFileName + imgbVars.ImgType + stackCount + ".dds");
+                        var currentDDSfile = Path.Combine(extractedIMGBdir, imgHeaderBlockFileName + imgbVars.ImgType + stackCount + ".dds");
 
                         using (var ddsStackStream = new FileStream(currentDDSfile, FileMode.Open, FileAccess.Read))
                         {

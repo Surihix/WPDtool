@@ -8,7 +8,7 @@ namespace WPDtool.IMGBClasses
 {
     internal partial class IMGB
     {
-        public static void UnpackIMGB(string imgHeaderBlockFile, string inImgbFile, string extractImgbDir)
+        public static void UnpackIMGB(string imgHeaderBlockFile, string inImgbFile, string extractIMGBdir)
         {
             var gtexPos = GetGTEXChunkPos(imgHeaderBlockFile);
             if (gtexPos == 0)
@@ -60,14 +60,14 @@ namespace WPDtool.IMGBClasses
                     // Type 4 is Other
                     case 0:
                     case 4:
-                        UnpackClassic(imgHeaderBlockFile, extractImgbDir, imgbVars, imgbStream);
+                        UnpackClassic(imgHeaderBlockFile, extractIMGBdir, imgbVars, imgbStream);
                         break;
 
                     // Cubemap type 
                     // Type 5 is for PS3
                     case 1:
                     case 5:
-                        UnpackCubemap(imgHeaderBlockFile, extractImgbDir, imgbVars, imgbStream);
+                        UnpackCubemap(imgHeaderBlockFile, extractIMGBdir, imgbVars, imgbStream);
                         break;
 
                     // Stacked type (LR only)
@@ -79,14 +79,14 @@ namespace WPDtool.IMGBClasses
                             Console.WriteLine("Detected more than one mip in this stack type image. skipped to next file.");
                             return;
                         }
-                        UnpackStack(imgHeaderBlockFile, extractImgbDir, imgbVars, imgbStream);
+                        UnpackStack(imgHeaderBlockFile, extractIMGBdir, imgbVars, imgbStream);
                         break;
                 }
             }
         }
 
 
-        static void UnpackClassic(string imgHeaderBlockFile, string extractImgbDir, IMGB imgbVars, FileStream imgbStream)
+        static void UnpackClassic(string imgHeaderBlockFile, string extractIMGBdir, IMGB imgbVars, FileStream imgbStream)
         {
             var imgHeaderBlockFileName = Path.GetFileName(imgHeaderBlockFile);
 
@@ -94,7 +94,7 @@ namespace WPDtool.IMGBClasses
             {
                 using (var gtexReader = new BinaryReader(gtexStream))
                 {
-                    var currentDDSfile = Path.Combine(extractImgbDir, imgHeaderBlockFileName + ".dds");
+                    var currentDDSfile = Path.Combine(extractIMGBdir, imgHeaderBlockFileName + ".dds");
 
                     using (var ddsStream = new FileStream(currentDDSfile, FileMode.Append, FileAccess.Write))
                     {
@@ -129,13 +129,13 @@ namespace WPDtool.IMGBClasses
                                 // and copy the unswizzled texture data to the final dds file. 
                                 if (imgbVars.IsPs3Imgb && imgbVars.ImgFormatValue.Equals(4) && imgbVars.ImgTypeValue.Equals(4))
                                 {
-                                    var swizzledBuffer = new byte[mipSize];
-                                    imgbStream.Read(swizzledBuffer, 0, swizzledBuffer.Length);
+                                    var swizzledArray = new byte[mipSize];
+                                    imgbStream.Read(swizzledArray, 0, swizzledArray.Length);
 
-                                    var unSwizzledBuffer = MortonUnswizzle(imgbVars, swizzledBuffer);
-                                    var correctedColorBuffer = ColorAsBGRA(unSwizzledBuffer);
+                                    var unSwizzledArray = MortonUnswizzle(imgbVars, swizzledArray);
+                                    var correctedColorArray = ColorAsBGRA(unSwizzledArray);
 
-                                    ddsStream.Write(correctedColorBuffer, 0, correctedColorBuffer.Length);
+                                    ddsStream.Write(correctedColorArray, 0, correctedColorArray.Length);
                                     doneCopying = true;
                                 }
 
@@ -144,12 +144,12 @@ namespace WPDtool.IMGBClasses
                                 // the data to the final dds file.
                                 if (imgbVars.IsPs3Imgb && imgbVars.ImgFormatValue.Equals(4) && imgbVars.ImgTypeValue.Equals(0))
                                 {
-                                    var colorDataToCorrectBuffer = new byte[mipSize];
-                                    imgbStream.Read(colorDataToCorrectBuffer, 0, colorDataToCorrectBuffer.Length);
+                                    var colorDataToCorrectArray = new byte[mipSize];
+                                    imgbStream.Read(colorDataToCorrectArray, 0, colorDataToCorrectArray.Length);
 
-                                    var correctedColorBuffer = ColorAsBGRA(colorDataToCorrectBuffer);
+                                    var correctedColorArray = ColorAsBGRA(colorDataToCorrectArray);
 
-                                    ddsStream.Write(correctedColorBuffer, 0, correctedColorBuffer.Length);
+                                    ddsStream.Write(correctedColorArray, 0, correctedColorArray.Length);
                                     doneCopying = true;
                                 }
 
@@ -158,12 +158,12 @@ namespace WPDtool.IMGBClasses
                                 // final dds file.
                                 if (imgbVars.IsPs3Imgb && imgbVars.ImgFormatValue.Equals(3))
                                 {
-                                    var colorDataToCorrectBuffer = new byte[mipSize];
-                                    imgbStream.Read(colorDataToCorrectBuffer, 0, colorDataToCorrectBuffer.Length);
+                                    var colorDataToCorrectArray = new byte[mipSize];
+                                    imgbStream.Read(colorDataToCorrectArray, 0, colorDataToCorrectArray.Length);
 
-                                    var correctedColorBuffer = ColorAsBGRA(colorDataToCorrectBuffer);
+                                    var correctedColorArray = ColorAsBGRA(colorDataToCorrectArray);
 
-                                    ddsStream.Write(correctedColorBuffer, 0, correctedColorBuffer.Length);
+                                    ddsStream.Write(correctedColorArray, 0, correctedColorArray.Length);
                                     doneCopying = true;
                                 }
 
@@ -186,7 +186,7 @@ namespace WPDtool.IMGBClasses
         }
 
 
-        static void UnpackCubemap(string imgHeaderBlockFile, string extractImgbDir, IMGB imgbVars, FileStream imgbStream)
+        static void UnpackCubemap(string imgHeaderBlockFile, string extractIMGBdir, IMGB imgbVars, FileStream imgbStream)
         {
             var imgHeaderBlockFileName = Path.GetFileName(imgHeaderBlockFile);
 
@@ -203,7 +203,7 @@ namespace WPDtool.IMGBClasses
                     int cubeMapCount = 1;
                     for (int cb = 0; cb < 6; cb++)
                     {
-                        var currentDDSfile = Path.Combine(extractImgbDir, imgHeaderBlockFileName + imgbVars.ImgType + cubeMapCount + ".dds");
+                        var currentDDSfile = Path.Combine(extractIMGBdir, imgHeaderBlockFileName + imgbVars.ImgType + cubeMapCount + ".dds");
 
                         using (var ddsStream = new FileStream(currentDDSfile, FileMode.Append, FileAccess.Write))
                         {
@@ -242,7 +242,7 @@ namespace WPDtool.IMGBClasses
         }
 
 
-        static void UnpackStack(string imgHeaderBlockFile, string extractImgbDir, IMGB imgbVars, FileStream imgbStream)
+        static void UnpackStack(string imgHeaderBlockFile, string extractIMGBdir, IMGB imgbVars, FileStream imgbStream)
         {
             var imgHeaderBlockFileName = Path.GetFileName(imgHeaderBlockFile);
 
@@ -266,7 +266,7 @@ namespace WPDtool.IMGBClasses
                     mipSize /= 4;
                     for (int st = 0; st < imgbVars.ImgDepth; st++)
                     {
-                        var currentDDSfile = Path.Combine(extractImgbDir, imgHeaderBlockFileName + imgbVars.ImgType + stackCount + ".dds");
+                        var currentDDSfile = Path.Combine(extractIMGBdir, imgHeaderBlockFileName + imgbVars.ImgType + stackCount + ".dds");
 
                         using (var ddsStream = new FileStream(currentDDSfile, FileMode.Append, FileAccess.Write))
                         {
