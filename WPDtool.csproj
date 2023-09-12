@@ -33,6 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="IMGBClasses">
+      <HintPath>..\IMGBClasses\bin\Release\IMGBClasses.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -43,14 +46,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="WPDtool\IMGBClasses\IMGBRepack.cs" />
-    <Compile Include="WPDtool\IMGBClasses\IMGBVariables.cs" />
-    <Compile Include="WPDtool\IMGBClasses\DDSMethods.cs" />
-    <Compile Include="WPDtool\IMGBClasses\IMGBUnpack.cs" />
-    <Compile Include="WPDtool\IMGBClasses\IMGBCmnMethods.cs" />
     <Compile Include="WPDtool\SupportClasses\ReaderHelpers.cs" />
-    <Compile Include="WPDtool\WPDClasses\WPDRepack.cs" />
-    <Compile Include="WPDtool\WPDClasses\WPDUnpack.cs" />
+    <Compile Include="WPDtool\SupportClasses\StreamExtension.cs" />
+    <Compile Include="WPDtool\WPDRepack.cs" />
+    <Compile Include="WPDtool\WPDUnpack.cs" />
     <Compile Include="WPDtool\SupportClasses\CmnMethods.cs" />
     <Compile Include="WPDtool\Core.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

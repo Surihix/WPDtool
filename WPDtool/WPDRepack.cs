@@ -1,10 +1,11 @@
-﻿using BinaryWriterEx;
+﻿using BinaryReaderEx;
+using BinaryWriterEx;
+using IMGBClasses;
+using StreamExtension;
 using System;
 using System.IO;
 using System.Linq;
-using WPDtool.IMGBClasses;
 using WPDtool.SupportClasses;
-using static WPDtool.SupportClasses.CmnMethods;
 
 namespace WPDtool.WPDClasses
 {
@@ -25,14 +26,14 @@ namespace WPDtool.WPDClasses
 
             if (!File.Exists(recordsListFile))
             {
-                ErrorExit("Error: Missing file '!!recordsList_Nova' in extracted directory. Please ensure that the wpd file is unpacked properly with Nova.");
+                CmnMethods.ErrorExit("Error: Missing file '!!recordsList_Nova' in extracted directory. Please ensure that the wpd file is unpacked properly with Nova.");
             }
 
             if (Directory.Exists(inWPDExtractedIMGBDir))
             {
                 if (outWPDImgbFile.EndsWith("ps3.imgb") || outWPDImgbFile.EndsWith("x360.imgb"))
                 {
-                    ErrorExit("Error: Detected PS3 or Xbox 360 version's extracted IMGB directory. repacking is not supported for these two versions.");
+                    CmnMethods.ErrorExit("Error: Detected PS3 or Xbox 360 version's extracted IMGB directory. repacking is not supported for these two versions.");
                 }
             }
 

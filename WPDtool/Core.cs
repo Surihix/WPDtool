@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
+using WPDtool.SupportClasses;
 using WPDtool.WPDClasses;
-using static WPDtool.SupportClasses.CmnMethods;
 
 namespace WPDtool
 {
@@ -11,13 +11,13 @@ namespace WPDtool
         {
             if (args.Length < 2)
             {
-                ErrorExit("Error: Enough arguments not specified\nMust be: WPDtool.exe '-u' or '-r' and 'WPD file or unpacked WPD folder'");
+                CmnMethods.ErrorExit("Error: Enough arguments not specified\nMust be: WPDtool.exe '-u' or '-r' and 'WPD file or unpacked WPD folder'");
             }
 
             var actionEnumString = args[0].Replace("-", "");
 
-            var convertedAction = new ActionEnums();
-            if (Enum.TryParse(actionEnumString, false, out ActionEnums resultEnum))
+            var convertedAction = new CmnMethods.ActionEnums();
+            if (Enum.TryParse(actionEnumString, false, out CmnMethods.ActionEnums resultEnum))
             {
                 convertedAction = resultEnum;
             }
@@ -26,24 +26,24 @@ namespace WPDtool
 
             switch (convertedAction)
             {
-                case ActionEnums.u:
+                case CmnMethods.ActionEnums.u:
                     if (!File.Exists(inWPDfileOrFolder))
                     {
-                        ErrorExit("Error: Specified file does not exist");
+                        CmnMethods.ErrorExit("Error: Specified file does not exist");
                     }
                     WPD.UnpackWPD(inWPDfileOrFolder);
                     break;
 
-                case ActionEnums.r:
+                case CmnMethods.ActionEnums.r:
                     if (!Directory.Exists(inWPDfileOrFolder))
                     {
-                        ErrorExit("Error: Specified directory to repack, does not exist");
+                        CmnMethods.ErrorExit("Error: Specified directory to repack, does not exist");
                     }
                     WPD.RepackWPD(inWPDfileOrFolder);
                     break;
 
                 default:
-                    ErrorExit("Error: Proper tool action is not specified.\nMust be: '-u', '-r' or '-rb'");
+                    CmnMethods.ErrorExit("Error: Proper tool action is not specified.\nMust be: '-u', '-r' or '-rb'");
                     break;
             }
         }

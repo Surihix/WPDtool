@@ -21,14 +21,6 @@ namespace BinaryWriterEx
             writerName.Write(writeValueBuffer);
         }
 
-        public static void WriteBytesUInt64(this BinaryWriter writerName, ulong valueToWrite, bool isBigEndian)
-        {
-            var writeValueBuffer = BitConverter.GetBytes(valueToWrite);
-            ReverseIfBigEndian(isBigEndian, writeValueBuffer);
-
-            writerName.Write(writeValueBuffer);
-        }
-
         static void ReverseIfBigEndian(bool isBigEndian, byte[] writeValueBuffer)
         {
             if (isBigEndian)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 
 namespace BinaryReaderEx
 {
@@ -21,12 +22,16 @@ namespace BinaryReaderEx
             return BitConverter.ToUInt32(readValueBuffer, 0);
         }
 
-        public static ulong ReadBytesUInt64(this BinaryReader reader, bool isBigEndian)
+        public static string ReadStringTillNull(this BinaryReader readerName)
         {
-            var readValueBuffer = reader.ReadBytes(8);
-            ReverseIfBigEndian(isBigEndian, readValueBuffer);
+            var sb = new StringBuilder();
+            char chars;
+            while ((chars = readerName.ReadChar()) != default)
+            {
+                sb.Append(chars);
+            }
 
-            return BitConverter.ToUInt64(readValueBuffer, 0);
+            return sb.ToString();
         }
 
         static void ReverseIfBigEndian(bool isBigEndian, byte[] readValueBuffer)

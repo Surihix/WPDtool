@@ -1,10 +1,11 @@
 ﻿using BinaryReaderEx;
 using BinaryWriterEx;
+using IMGBClasses;
+using StreamExtension;
 using System;
 using System.IO;
 using System.Linq;
 using System.Text;
-using WPDtool.IMGBClasses;
 using WPDtool.SupportClasses;
 
 namespace WPDtool.WPDClasses
