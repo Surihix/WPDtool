@@ -5,6 +5,8 @@ VisualStudioVersion = 17.5.33627.172
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPDtool", "WPDtool.csproj", "{2E00BAF3-B74C-481B-BE2B-124D41B36EDA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IMGBClasses", "..\IMGBClasses\IMGBClasses.csproj", "{F4560A04-4565-4467-A328-DE468F98F3C9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{2E00BAF3-B74C-481B-BE2B-124D41B36EDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E00BAF3-B74C-481B-BE2B-124D41B36EDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2E00BAF3-B74C-481B-BE2B-124D41B36EDA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F4560A04-4565-4467-A328-DE468F98F3C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F4560A04-4565-4467-A328-DE468F98F3C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F4560A04-4565-4467-A328-DE468F98F3C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F4560A04-4565-4467-A328-DE468F98F3C9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
