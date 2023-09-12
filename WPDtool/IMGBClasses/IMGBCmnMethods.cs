@@ -67,51 +67,6 @@ namespace WPDtool.IMGBClasses
         }
 
 
-        static void GetExtImgInfo(BinaryReader ddsReader, IMGB imgbVars)
-        {
-            ddsReader.BaseStream.Position = 12;
-            imgbVars.OutImgHeight = ddsReader.ReadUInt32();
-            imgbVars.OutImgWidth = ddsReader.ReadUInt32();
-
-            ddsReader.BaseStream.Position = 28;
-            imgbVars.OutImgMipCount = ddsReader.ReadUInt32();
-
-            ddsReader.BaseStream.Position = 84;
-            var getImgFormat = ddsReader.ReadChars(4);
-            var imgFormatString = string.Join("", getImgFormat).Replace("\0", "");
-
-            switch (imgFormatString)
-            {
-                case "":
-                    if (imgbVars.ImgFormatValue == 3)
-                    {
-                        imgbVars.OutImgFormatValue = 3;
-                    }
-                    if (imgbVars.ImgFormatValue == 4)
-                    {
-                        imgbVars.OutImgFormatValue = 4;
-                    }
-                    break;
-
-                case "DXT1":
-                    imgbVars.OutImgFormatValue = 24;
-                    break;
-
-                case "DXT3":
-                    imgbVars.OutImgFormatValue = 25;
-                    break;
-
-                case "DXT5":
-                    imgbVars.OutImgFormatValue = 26;
-                    break;
-
-                default:
-                    imgbVars.OutImgFormatValue = 0;
-                    break;
-            }
-        }
-
-
         static byte[] MortonUnswizzle(IMGB imgbVars, byte[] swizzledBufferVar)
         {
             int widthVar = imgbVars.ImgWidth;
@@ -215,6 +170,72 @@ namespace WPDtool.IMGBClasses
             }
 
             return correctedColors;
+        }
+
+
+        static void GetExtImgInfo(BinaryReader ddsReader, IMGB imgbVars)
+        {
+            ddsReader.BaseStream.Position = 12;
+            imgbVars.OutImgHeight = ddsReader.ReadUInt32();
+            imgbVars.OutImgWidth = ddsReader.ReadUInt32();
+
+            ddsReader.BaseStream.Position = 28;
+            imgbVars.OutImgMipCount = ddsReader.ReadUInt32();
+
+            ddsReader.BaseStream.Position = 84;
+            var getImgFormat = ddsReader.ReadChars(4);
+            var imgFormatString = string.Join("", getImgFormat).Replace("\0", "");
+
+            switch (imgFormatString)
+            {
+                case "":
+                    if (imgbVars.ImgFormatValue == 3)
+                    {
+                        imgbVars.OutImgFormatValue = 3;
+                    }
+                    if (imgbVars.ImgFormatValue == 4)
+                    {
+                        imgbVars.OutImgFormatValue = 4;
+                    }
+                    break;
+
+                case "DXT1":
+                    imgbVars.OutImgFormatValue = 24;
+                    break;
+
+                case "DXT3":
+                    imgbVars.OutImgFormatValue = 25;
+                    break;
+
+                case "DXT5":
+                    imgbVars.OutImgFormatValue = 26;
+                    break;
+
+                default:
+                    imgbVars.OutImgFormatValue = 0;
+                    break;
+            }
+        }
+
+
+        static bool CheckImgFilesBatch(int fileAmount, string extractImgbDir, string imgHeaderBlockFileName, IMGB imgbVars)
+        {
+            var isMissingAnImg = false;
+            var imgFileCount = 1;
+
+            for (int i = 0; i < fileAmount; i++)
+            {
+                var fileToCheck = Path.Combine(extractImgbDir, imgHeaderBlockFileName + imgbVars.ImgType + imgFileCount + ".dds");
+
+                if (!File.Exists(fileToCheck))
+                {
+                    isMissingAnImg = true;
+                }
+
+                imgFileCount++;
+            }
+
+            return isMissingAnImg;
         }
     }
 }

@@ -302,8 +302,7 @@ namespace WPDtool.IMGBClasses
         }
 
 
-
-        // Repack methods
+        // Common methods
         static bool CheckExtImgInfo(IMGB imgbVars)
         {
             var isValidImg = true;
@@ -332,27 +331,6 @@ namespace WPDtool.IMGBClasses
             }
 
             return isValidImg;
-        }
-
-
-        static bool CheckImgFilesBatch(int fileAmount, string extractImgbDir, string imgHeaderBlockFileName, IMGB imgbVars)
-        {
-            var isMissingAnImg = false;
-            var imgFileCount = 1;
-
-            for (int i = 0; i < fileAmount; i++)
-            {
-                var fileToCheck = Path.Combine(extractImgbDir, imgHeaderBlockFileName + imgbVars.ImgType + imgFileCount + ".dds");
-
-                if (!File.Exists(fileToCheck))
-                {
-                    isMissingAnImg = true;
-                }
-
-                imgFileCount++;
-            }
-
-            return isMissingAnImg;
         }
 
 

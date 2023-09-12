@@ -47,7 +47,7 @@
     <Compile Include="WPDtool\IMGBClasses\IMGBVariables.cs" />
     <Compile Include="WPDtool\IMGBClasses\DDSMethods.cs" />
     <Compile Include="WPDtool\IMGBClasses\IMGBUnpack.cs" />
-    <Compile Include="WPDtool\IMGBClasses\IMGBMethods.cs" />
+    <Compile Include="WPDtool\IMGBClasses\IMGBCmnMethods.cs" />
     <Compile Include="WPDtool\SupportClasses\ReaderHelpers.cs" />
     <Compile Include="WPDtool\WPDClasses\WPDRepack.cs" />
     <Compile Include="WPDtool\WPDClasses\WPDUnpack.cs" />
