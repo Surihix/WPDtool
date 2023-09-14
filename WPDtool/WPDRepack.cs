@@ -22,11 +22,11 @@ namespace WPDtool.WPDClasses
             var outWPDImgbFile = Path.Combine(inWPDExtractedDirName, Path.GetFileNameWithoutExtension(outWPDfileName) + ".imgb");
             var inWPDExtractedIMGBDir = Path.Combine(inWPDExtractedDirName, "_" + Path.GetFileNameWithoutExtension(outWPDfileName) + ".imgb");
 
-            var recordsListFile = Path.Combine(inWPDExtractedDir, "!!recordsList_Nova");
+            var recordsListFile = Path.Combine(inWPDExtractedDir, CmnMethods.RecordsList);
 
             if (!File.Exists(recordsListFile))
             {
-                CmnMethods.ErrorExit("Error: Missing file '!!recordsList_Nova' in extracted directory. Please ensure that the wpd file is unpacked properly with Nova.");
+                CmnMethods.ErrorExit($"Error: Missing file '{CmnMethods.RecordsList}' in extracted directory. Please ensure that the wpd file is unpacked properly with Nova.");
             }
 
             if (Directory.Exists(inWPDExtractedIMGBDir))

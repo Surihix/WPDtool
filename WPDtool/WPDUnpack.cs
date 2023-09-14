@@ -107,7 +107,7 @@ namespace WPDtool.WPDClasses
 
         static void WriteRecordList(uint totalRecords, BinaryReader readerName, string extractWpdDir)
         {
-            using (var fs = new FileStream(Path.Combine(extractWpdDir, "!!recordsList_Nova"), FileMode.Append, FileAccess.Write))
+            using (var fs = new FileStream(Path.Combine(extractWpdDir, CmnMethods.RecordsList), FileMode.Append, FileAccess.Write))
             {
                 using (var bw = new BinaryWriter(fs))
                 {

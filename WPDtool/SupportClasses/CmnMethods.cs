@@ -16,5 +16,7 @@ namespace WPDtool.SupportClasses
             u,
             r
         }
+
+        public static string RecordsList = "!!WPD_Records";
     }
 }
