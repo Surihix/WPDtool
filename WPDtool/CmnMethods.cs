@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace WPDtool.SupportClasses
+namespace WPDtool
 {
     internal class CmnMethods
     {

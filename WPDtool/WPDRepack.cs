@@ -1,13 +1,12 @@
 ﻿using BinaryReaderEx;
 using BinaryWriterEx;
-using IMGBClasses;
+using IMGB;
 using StreamExtension;
 using System;
 using System.IO;
 using System.Linq;
-using WPDtool.SupportClasses;
 
-namespace WPDtool.WPDClasses
+namespace WPDtool
 {
     internal partial class WPD
     {
@@ -136,11 +135,11 @@ namespace WPDtool.WPDClasses
 
                                         var currentFile = Path.Combine(inWPDExtractedDir, currentRecordName + currentRecordExtn);
 
-                                        if (IMGB.ImgHeaderBlockFileExtensions.Contains(currentRecordExtn))
+                                        if (ImageMethods.ImgHeaderBlockFileExtensions.Contains(currentRecordExtn))
                                         {
                                             if (Directory.Exists(inWPDExtractedIMGBDir))
                                             {
-                                                IMGB.RepackIMGBType1(currentFile, outWPDImgbFile, inWPDExtractedIMGBDir);
+                                                ImageMethods.RepackIMGBType1(currentFile, outWPDImgbFile, inWPDExtractedIMGBDir);
                                             }
                                         }
 

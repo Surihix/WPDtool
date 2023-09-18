@@ -1,7 +1,5 @@
 ﻿using System;
 using System.IO;
-using WPDtool.SupportClasses;
-using WPDtool.WPDClasses;
 
 namespace WPDtool
 {
