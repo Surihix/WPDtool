@@ -18,7 +18,7 @@ namespace WPDtool
             var inWPDimgbFile = Path.Combine(wpdFileDir, Path.GetFileNameWithoutExtension(inWPDfile) + ".imgb");
 
             var extractWpdDir = Path.Combine(wpdFileDir, "_" + wpdFileName);
-            var extractImgbDir = Path.Combine(Path.GetDirectoryName(inWPDfile), "_" + inWPDimgbFile);
+            var extractImgbDir = Path.Combine(Path.GetDirectoryName(inWPDfile), "_" + Path.GetFileName(inWPDimgbFile));
 
             DeleteDirIfExists(extractWpdDir);
             Directory.CreateDirectory(extractWpdDir);
