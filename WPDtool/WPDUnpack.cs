@@ -30,6 +30,8 @@ namespace WPDtool
             }
 
 
+            Console.WriteLine("");
+
             using (var wpdStream = new FileStream(inWPDfile, FileMode.Open, FileAccess.Read))
             {
                 using (var wpdReader = new BinaryReader(wpdStream))

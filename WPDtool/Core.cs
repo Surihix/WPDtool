@@ -9,41 +9,54 @@ namespace WPDtool
         {
             if (args.Length < 2)
             {
-                CmnMethods.ErrorExit("Error: Enough arguments not specified\nMust be: WPDtool.exe '-u' or '-r' and 'WPD file or unpacked WPD folder'");
+                CmnMethods.ErrorExit("Error: Enough arguments not specified\nMust be: WPDtool.exe '-u' or '-r' and 'WPD file or unpacked WPD folder'.");
             }
 
-            var actionEnumString = args[0].Replace("-", "");
+            var toolAction = args[0].Replace("-", "");
+            var inWPDfileOrDir = args[1];
 
-            var convertedAction = new CmnMethods.ActionEnums();
-            if (Enum.TryParse(actionEnumString, false, out CmnMethods.ActionEnums resultEnum))
+
+            try
             {
-                convertedAction = resultEnum;
+                var convertedToolAction = new ActionSwitches();
+                if (Enum.TryParse(toolAction, false, out ActionSwitches convertedActionSwitch))
+                {
+                    convertedToolAction = convertedActionSwitch;
+                }
+                else
+                {
+                    CmnMethods.ErrorExit("Error: Proper tool action is not specified\nMust be '-u' for unpacking or '-r' for repacking.");
+                }
+
+                switch (convertedToolAction)
+                {
+                    case ActionSwitches.u:
+                        if (!File.Exists(inWPDfileOrDir))
+                        {
+                            CmnMethods.ErrorExit("Error: Specified WPD file does not exist.");
+                        }
+                        WPD.UnpackWPD(inWPDfileOrDir);
+                        break;
+
+                    case ActionSwitches.r:
+                        if (!Directory.Exists(inWPDfileOrDir))
+                        {
+                            CmnMethods.ErrorExit("Error: Specified unpacked directory to repack, does not exist.");
+                        }
+                        WPD.RepackWPD(inWPDfileOrDir);
+                        break;
+                }
             }
-
-            var inWPDfileOrFolder = args[1];
-
-            switch (convertedAction)
+            catch (Exception ex)
             {
-                case CmnMethods.ActionEnums.u:
-                    if (!File.Exists(inWPDfileOrFolder))
-                    {
-                        CmnMethods.ErrorExit("Error: Specified file does not exist");
-                    }
-                    WPD.UnpackWPD(inWPDfileOrFolder);
-                    break;
-
-                case CmnMethods.ActionEnums.r:
-                    if (!Directory.Exists(inWPDfileOrFolder))
-                    {
-                        CmnMethods.ErrorExit("Error: Specified directory to repack, does not exist");
-                    }
-                    WPD.RepackWPD(inWPDfileOrFolder);
-                    break;
-
-                default:
-                    CmnMethods.ErrorExit("Error: Proper tool action is not specified.\nMust be: '-u', '-r' or '-rb'");
-                    break;
+                CmnMethods.ErrorExit("" + ex);
             }
+        }
+
+        public enum ActionSwitches
+        {
+            u,
+            r
         }
     }
 }

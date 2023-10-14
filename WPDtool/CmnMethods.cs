@@ -11,12 +11,6 @@ namespace WPDtool
             Environment.Exit(0);
         }
 
-        public enum ActionEnums
-        {
-            u,
-            r
-        }
-
         public static string RecordsList = "!!WPD_Records";
     }
 }

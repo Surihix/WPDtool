@@ -153,6 +153,9 @@ namespace WPDtool
                                             currentFileStream.ExCopyTo(outWPDdataStream, 0, currentFileSize);
                                         }
 
+                                        // Pad null bytes to make the next
+                                        // start position divisible by a 
+                                        // pad value
                                         var currentPos = outWPDdataStream.Length;
                                         var padValue = 4;
                                         if (currentPos % padValue != 0)
