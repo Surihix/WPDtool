@@ -1,6 +1,6 @@
 ﻿using BinaryReaderEx;
 using BinaryWriterEx;
-using IMGB;
+using IMGBlibrary;
 using StreamExtension;
 using System;
 using System.IO;
@@ -17,16 +17,16 @@ namespace WPDtool
             var wpdFileDir = Path.GetDirectoryName(inWPDfile);
             var inWPDimgbFile = Path.Combine(wpdFileDir, Path.GetFileNameWithoutExtension(inWPDfile) + ".imgb");
 
-            var extractWpdDir = Path.Combine(wpdFileDir, "_" + wpdFileName);
-            var extractImgbDir = Path.Combine(Path.GetDirectoryName(inWPDfile), "_" + Path.GetFileName(inWPDimgbFile));
+            var extractWPDdir = Path.Combine(wpdFileDir, "_" + wpdFileName);
+            var extractIMGBdir = Path.Combine(Path.GetDirectoryName(inWPDfile), "_" + Path.GetFileName(inWPDimgbFile));
 
-            DeleteDirIfExists(extractWpdDir);
-            Directory.CreateDirectory(extractWpdDir);
+            DeleteDirIfExists(extractWPDdir);
+            Directory.CreateDirectory(extractWPDdir);
 
             if (File.Exists(inWPDimgbFile))
             {
-                DeleteDirIfExists(extractImgbDir);
-                Directory.CreateDirectory(extractImgbDir);
+                DeleteDirIfExists(extractIMGBdir);
+                Directory.CreateDirectory(extractIMGBdir);
             }
 
 
@@ -47,7 +47,7 @@ namespace WPDtool
                     var totalRecords = wpdReader.ReadBytesUInt32(true);
 
                     Console.WriteLine("Writing record list....");
-                    WriteRecordList(totalRecords, wpdReader, extractWpdDir);
+                    WriteRecordList(totalRecords, wpdReader, extractWPDdir);
                     Console.WriteLine("");
 
 
@@ -67,7 +67,7 @@ namespace WPDtool
                         var currentRecordExtension = "." + wpdReader.ReadStringTillNull();
                         currentRecordExtension = currentRecordExtension == "." ? "" : currentRecordExtension;
 
-                        var currentOutFile = Path.Combine(extractWpdDir, currentRecordName + currentRecordExtension);
+                        var currentOutFile = Path.Combine(extractWPDdir, currentRecordName + currentRecordExtension);
                         Console.WriteLine("Extracted " + currentOutFile);
 
                         using (var ofs = new FileStream(currentOutFile, FileMode.OpenOrCreate, FileAccess.Write))
@@ -79,7 +79,7 @@ namespace WPDtool
                         {
                             if (File.Exists(inWPDimgbFile))
                             {
-                                ImageMethods.UnpackIMGB(currentOutFile, inWPDimgbFile, extractImgbDir);
+                                ImageMethods.UnpackIMGB(currentOutFile, inWPDimgbFile, extractIMGBdir);
                             }
                         }
 

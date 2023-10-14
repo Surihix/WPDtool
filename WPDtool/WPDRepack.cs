@@ -1,6 +1,6 @@
 ﻿using BinaryReaderEx;
 using BinaryWriterEx;
-using IMGB;
+using IMGBlibrary;
 using StreamExtension;
 using System;
 using System.IO;
@@ -102,36 +102,36 @@ namespace WPDtool
 
                     uint recordDataStartPos = 0;
 
-                    using (var outWpdDataStream = new FileStream(outWPDfile, FileMode.Append, FileAccess.Write, FileShare.ReadWrite))
+                    using (var outWPDdataStream = new FileStream(outWPDfile, FileMode.Append, FileAccess.Write, FileShare.ReadWrite))
                     {
-                        using (var outWpdOffsetStream = new FileStream(outWPDfile, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
+                        using (var outWPDoffsetStream = new FileStream(outWPDfile, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
                         {
-                            using (var outWpdOffsetReader = new BinaryReader(outWpdOffsetStream))
+                            using (var outWPDoffsetReader = new BinaryReader(outWPDoffsetStream))
                             {
-                                using (var outWpdOffsetWriter = new BinaryWriter(outWpdOffsetStream))
+                                using (var outWPDoffsetWriter = new BinaryWriter(outWPDoffsetStream))
                                 {
-                                    outWpdOffsetWriter.BaseStream.Position = 4;
-                                    outWpdOffsetWriter.WriteBytesUInt32(totalRecords, true);
+                                    outWPDoffsetWriter.BaseStream.Position = 4;
+                                    outWPDoffsetWriter.WriteBytesUInt32(totalRecords, true);
 
 
                                     uint readStartPos = 16;
                                     uint writeStartPos = 32;
                                     for (int o = 0; o < totalRecords; o++)
                                     {
-                                        outWpdOffsetReader.BaseStream.Position = readStartPos;
-                                        var currentRecordName = outWpdOffsetReader.ReadStringTillNull();
+                                        outWPDoffsetReader.BaseStream.Position = readStartPos;
+                                        var currentRecordName = outWPDoffsetReader.ReadStringTillNull();
 
-                                        outWpdOffsetReader.BaseStream.Position = readStartPos + 24;
-                                        var currentRecordExtn = "." + outWpdOffsetReader.ReadStringTillNull();
+                                        outWPDoffsetReader.BaseStream.Position = readStartPos + 24;
+                                        var currentRecordExtn = "." + outWPDoffsetReader.ReadStringTillNull();
 
                                         if (currentRecordExtn.Equals("."))
                                         {
                                             currentRecordExtn = "";
                                         }
 
-                                        recordDataStartPos = (uint)outWpdDataStream.Length;
-                                        outWpdOffsetWriter.BaseStream.Position = writeStartPos;
-                                        outWpdOffsetWriter.WriteBytesUInt32(recordDataStartPos, true);
+                                        recordDataStartPos = (uint)outWPDdataStream.Length;
+                                        outWPDoffsetWriter.BaseStream.Position = writeStartPos;
+                                        outWPDoffsetWriter.WriteBytesUInt32(recordDataStartPos, true);
 
                                         var currentFile = Path.Combine(inWPDExtractedDir, currentRecordName + currentRecordExtn);
 
@@ -145,26 +145,27 @@ namespace WPDtool
 
                                         var currentFileSize = (uint)new FileInfo(currentFile).Length;
 
-                                        outWpdOffsetWriter.BaseStream.Position = writeStartPos + 4;
-                                        outWpdOffsetWriter.WriteBytesUInt32(currentFileSize, true);
+                                        outWPDoffsetWriter.BaseStream.Position = writeStartPos + 4;
+                                        outWPDoffsetWriter.WriteBytesUInt32(currentFileSize, true);
 
                                         using (var currentFileStream = new FileStream(currentFile, FileMode.Open, FileAccess.Read))
                                         {
-                                            currentFileStream.ExCopyTo(outWpdDataStream, 0, currentFileSize);
+                                            currentFileStream.ExCopyTo(outWPDdataStream, 0, currentFileSize);
                                         }
 
-                                        var currentPos = outWpdDataStream.Length;
-                                        if (currentPos % 4 != 0)
+                                        var currentPos = outWPDdataStream.Length;
+                                        var padValue = 4;
+                                        if (currentPos % padValue != 0)
                                         {
-                                            var remainder = currentPos % 4;
-                                            var increaseBytes = 4 - remainder;
+                                            var remainder = currentPos % padValue;
+                                            var increaseBytes = padValue - remainder;
                                             var newPos = currentPos + increaseBytes;
                                             var nullBytesAmount = newPos - currentPos;
 
-                                            outWpdDataStream.Seek(currentPos, SeekOrigin.Begin);
+                                            outWPDdataStream.Seek(currentPos, SeekOrigin.Begin);
                                             for (int p = 0; p < nullBytesAmount; p++)
                                             {
-                                                outWpdDataStream.WriteByte(0);
+                                                outWPDdataStream.WriteByte(0);
                                             }
                                         }
 
