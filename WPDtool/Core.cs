@@ -10,7 +10,9 @@ namespace WPDtool
         {
             if (args.Length < 2)
             {
-                CmnMethods.ErrorExit("Error: Enough arguments not specified\nMust be: WPDtool.exe '-u' or '-r' and 'WPD file or unpacked WPD folder'.");
+                CmnMethods.ErrorExit("Error: Enough arguments not specified\n\nExamples:" +
+                    "\nFor Unpacking: WPDtool.exe -u \"WPD file\" " +
+                    "\nFor Repacking: WPDtool.exe -r \"unpacked WPD folder\"");
             }
 
             var toolAction = args[0].Replace("-", "");
