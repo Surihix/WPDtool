@@ -1,5 +1,8 @@
 # WPDtool
-This tool allows you to unpack and repack the WPD files from the FINAL FANTASY XIII trilogy. 
+This tool allows you to unpack and repack the WPD type files from the FINAL FANTASY XIII trilogy. 
+
+The wpd files can have any one of the following extensions:
+<br>``.bin, .wdb, .wpd, .wpk, .xfv, .xgr, .xwb, .xwp``
 
 Some of the WPD files will have a paired IMGB file that contains raw image data without a header. this tool will unpack these image data and will also assign a valid DDS header to these image data, thereby allowing the image to be vieweable in a compatible image viewing software.
 
