@@ -1,5 +1,7 @@
 # WPDtool
-This tool allows you to unpack and repack the WPD files from the FINAL FANTASY XIII trilogy. some of the WPD files will have a paired IMGB file that contains raw image data without the header offsets. this tool will unpack these image data and will assign a valid DDS header to these image data thereby allowing the image to be vieweable in a compatible image viewing software.
+This tool allows you to unpack and repack the WPD files from the FINAL FANTASY XIII trilogy. 
+
+Some of the WPD files will have a paired IMGB file that contains raw image data without a header. this tool will unpack these image data and will also assign a valid DDS header to these image data, thereby allowing the image to be vieweable in a compatible image viewing software.
 
 The program should be launched from command prompt with any one of these following argument switches along with the input file:
 <br>``-u`` Unpacks the WPD file
