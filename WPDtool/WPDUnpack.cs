@@ -77,11 +77,11 @@ namespace WPDtool
                             wpdStream.ExCopyTo(ofs, currentRecordStart, currentRecordSize);
                         }
 
-                        if (ImageMethods.ImgHeaderBlockFileExtensions.Contains(currentRecordExtension))
+                        if (IMGBVariables.ImgHeaderBlockExtns.Contains(currentRecordExtension))
                         {
                             if (File.Exists(inWPDimgbFile))
                             {
-                                ImageMethods.UnpackIMGB(currentOutFile, inWPDimgbFile, extractIMGBdir);
+                                IMGBUnpack.UnpackIMGB(currentOutFile, inWPDimgbFile, extractIMGBdir);
                             }
                         }
 

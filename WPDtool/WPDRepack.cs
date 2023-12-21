@@ -12,27 +12,35 @@ namespace WPDtool
     {
         public static void RepackWPD(string inWPDExtractedDir)
         {
-            var inWPDExtractedDirName = Path.GetDirectoryName(inWPDExtractedDir);
+            var inWPDExtractedDirRoot = Path.GetDirectoryName(inWPDExtractedDir);
 
             var outWPDfileName = Path.GetFileName(inWPDExtractedDir);
             outWPDfileName = outWPDfileName.Remove(0, 1);
 
-            var outWPDfile = Path.Combine(inWPDExtractedDirName, outWPDfileName);
-            var outWPDImgbFile = Path.Combine(inWPDExtractedDirName, Path.GetFileNameWithoutExtension(outWPDfileName) + ".imgb");
-            var inWPDExtractedIMGBDir = Path.Combine(inWPDExtractedDirName, "_" + Path.GetFileNameWithoutExtension(outWPDfileName) + ".imgb");
+            var outWPDfile = Path.Combine(inWPDExtractedDirRoot, outWPDfileName);
+            var outWPDImgbFile = Path.Combine(inWPDExtractedDirRoot, Path.GetFileNameWithoutExtension(outWPDfileName) + ".imgb");
+            var inWPDExtractedIMGBDir = Path.Combine(inWPDExtractedDirRoot, "_" + Path.GetFileNameWithoutExtension(outWPDfileName) + ".imgb");
 
             var recordsListFile = Path.Combine(inWPDExtractedDir, CmnMethods.RecordsList);
 
             if (!File.Exists(recordsListFile))
             {
-                CmnMethods.ErrorExit($"Error: Missing file '{CmnMethods.RecordsList}' in extracted directory. Please ensure that the wpd file is unpacked properly with Nova.");
+                CmnMethods.ErrorExit($"Error: Missing file '{CmnMethods.RecordsList}' in extracted directory. Please ensure that the wpd file is unpacked properly with this tool.");
             }
 
             if (Directory.Exists(inWPDExtractedIMGBDir))
             {
-                if (outWPDImgbFile.EndsWith("ps3.imgb") || outWPDImgbFile.EndsWith("x360.imgb"))
+                if (Directory.GetFiles(inWPDExtractedIMGBDir).Length != 0)
                 {
-                    CmnMethods.ErrorExit("Error: Detected PS3 or Xbox 360 version's extracted IMGB directory. repacking is not supported for these two versions.");
+                    if (outWPDImgbFile.EndsWith("ps3.imgb") || outWPDImgbFile.EndsWith("x360.imgb"))
+                    {
+                        CmnMethods.ErrorExit("Error: Detected PS3 or Xbox 360 version's extracted IMGB directory. repacking is not supported for these two versions.");
+                    }
+
+                    if (!File.Exists(outWPDImgbFile))
+                    {
+                        CmnMethods.ErrorExit($"Error: Paired imgb file for the extracted IMGB directory, is missing.\nPlease ensure that the paired imgb file is present next to the extracted imgb directory.");
+                    }
                 }
             }
 
@@ -43,10 +51,8 @@ namespace WPDtool
 
             if (File.Exists(outWPDImgbFile))
             {
-                if (File.Exists(outWPDImgbFile + ".old"))
-                {
-                    File.Delete(outWPDImgbFile + ".old");
-                }
+                IfFileExistsDel(outWPDImgbFile + ".old");
+
                 File.Copy(outWPDImgbFile, outWPDImgbFile + ".old");
             }
 
@@ -135,11 +141,11 @@ namespace WPDtool
 
                                         var currentFile = Path.Combine(inWPDExtractedDir, currentRecordName + currentRecordExtn);
 
-                                        if (ImageMethods.ImgHeaderBlockFileExtensions.Contains(currentRecordExtn))
+                                        if (IMGBVariables.ImgHeaderBlockExtns.Contains(currentRecordExtn))
                                         {
                                             if (Directory.Exists(inWPDExtractedIMGBDir))
                                             {
-                                                ImageMethods.RepackIMGBType1(currentFile, outWPDImgbFile, inWPDExtractedIMGBDir);
+                                                IMGBRepack.RepackIMGBType1(currentFile, outWPDImgbFile, inWPDExtractedIMGBDir);
                                             }
                                         }
 
@@ -197,6 +203,15 @@ namespace WPDtool
             for (int b = 0; b < padding; b++)
             {
                 streamName.Write("\0");
+            }
+        }
+
+
+        static void IfFileExistsDel(string fileToDelete)
+        {
+            if (File.Exists(fileToDelete))
+            {
+                File.Delete(fileToDelete);
             }
         }
     }
