@@ -14,7 +14,7 @@ Commandline usage examples:
 <br>``WPDtool.exe -u "system.win32.xgr" ``
 <br>``WPDtool.exe -r "_system.win32.xgr" ``
 
-Note: For the ``-r`` switch, the unpacked TRB folder name is specified in the example. the ``_`` in the name indicates the name of the unpacked folder.
+Note: For the ``-r`` switch, the unpacked WPD folder name is specified in the example. the ``_`` in the name indicates the name of the unpacked folder.
 
 ### Important
 - Repacking is supported only for the PC version WPD IMGB files.
