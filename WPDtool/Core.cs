@@ -10,7 +10,7 @@ namespace WPDtool
         {
             if (args.Length < 2)
             {
-                CmnMethods.ErrorExit("Error: Enough arguments not specified\n\nExamples:" +
+                CmnMethods.ErrorExit("Error: Enough arguments not specified\n" +
                     "\nFor Unpacking: WPDtool.exe -u \"WPD file\" " +
                     "\nFor Repacking: WPDtool.exe -r \"unpacked WPD folder\"");
             }
