@@ -18,7 +18,7 @@ Note: For the ``-r`` switch, the unpacked WPD folder name is specified in the ex
 
 ### Important
 - Repacking is supported only for the PC version WPD IMGB files.
-- If you are replacing any of the images with the repack function then the image dimension, pixel format and the mip count should be similar to the original image file.
+- If you are replacing the DDS images with the repack function, then make sure that the image dimension, DDS Compression/ Pixel format and the mip count of your image are all the similar to the original image file.
 - The Xbox 360 version image data is swizzled and due to this swizzled nature, this tool will not unpack those images correctly.
 
 ## For Developers
