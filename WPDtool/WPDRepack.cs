@@ -46,6 +46,8 @@ namespace WPDtool
 
             if (File.Exists(outWPDfile))
             {
+                IfFileExistsDel(outWPDfile + ".old");
+
                 File.Move(outWPDfile, outWPDfile + ".old");
             }
 
