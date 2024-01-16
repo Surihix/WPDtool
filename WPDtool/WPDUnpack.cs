@@ -70,7 +70,7 @@ namespace WPDtool
                         currentRecordExtension = currentRecordExtension == "." ? "" : currentRecordExtension;
 
                         var currentOutFile = Path.Combine(extractWPDdir, currentRecordName + currentRecordExtension);
-                        Console.WriteLine("Extracted " + currentOutFile);
+                        Console.WriteLine("Unpacking " + currentOutFile);
 
                         using (var ofs = new FileStream(currentOutFile, FileMode.OpenOrCreate, FileAccess.Write))
                         {
@@ -92,8 +92,7 @@ namespace WPDtool
             }
 
             Console.WriteLine("");
-            Console.WriteLine("Finished extracting " + inWPDfile);
-            Console.ReadLine();
+            Console.WriteLine("Finished unpacking file " + "\"" + Path.GetFileName(inWPDfile) + "\"");
         }
 
 

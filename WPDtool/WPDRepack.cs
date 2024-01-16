@@ -180,7 +180,7 @@ namespace WPDtool
                                             }
                                         }
 
-                                        Console.WriteLine("Repacked " + currentRecordName + currentRecordExtn);
+                                        Console.WriteLine("Repacked " + currentFile);
                                         Console.WriteLine("");
 
                                         recordDataStartPos += currentFileSize;
@@ -195,8 +195,7 @@ namespace WPDtool
             }
 
             Console.WriteLine("");
-            Console.WriteLine("Finished repacking files to " + outWPDfileName);
-            Console.ReadLine();
+            Console.WriteLine("Finished repacking files to " + "\"" + outWPDfileName + "\"");
         }
 
 
