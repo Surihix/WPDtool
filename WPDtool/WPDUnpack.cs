@@ -1,5 +1,4 @@
 ﻿using BinaryReaderEx;
-using BinaryWriterEx;
 using IMGBlibrary;
 using StreamExtension;
 using System;
@@ -107,39 +106,30 @@ namespace WPDtool
 
         static void WriteRecordList(uint totalRecords, BinaryReader readerName, string extractWpdDir)
         {
-            using (var fs = new FileStream(Path.Combine(extractWpdDir, CmnMethods.RecordsList), FileMode.Append, FileAccess.Write))
+            using (var recordListWriter = new StreamWriter(Path.Combine(extractWpdDir, CmnMethods.RecordsList), true))
             {
-                using (var bw = new BinaryWriter(fs))
+                recordListWriter.WriteLine(totalRecords);
+
+
+                uint readStartPos = 16;
+                for (int r = 0; r < totalRecords; r++)
                 {
-                    bw.BaseStream.Position = 0;
-                    bw.WriteBytesUInt32(totalRecords, false);
+                    readerName.BaseStream.Position = readStartPos;
+                    recordListWriter.Write(readerName.ReadStringTillNull());
 
-                    using (var sw = new StreamWriter(fs))
+                    readerName.BaseStream.Position = readStartPos + 24;
+                    var extn = readerName.ReadStringTillNull();
+
+                    if (extn == "")
                     {
-
-                        uint readStartPos = 16;
-                        for (int r = 0; r < totalRecords; r++)
-                        {
-                            readerName.BaseStream.Position = readStartPos;
-                            sw.Write(readerName.ReadStringTillNull());
-
-                            readerName.BaseStream.Position = readStartPos + 24;
-                            var extn = "\0" + readerName.ReadStringTillNull();
-
-                            if (!extn.Equals("\0"))
-                            {
-                                sw.Write(extn);
-                            }
-                            else
-                            {
-                                sw.Write("\0.");
-                            }
-
-                            sw.Write("\0");
-
-                            readStartPos += 32;
-                        }
+                        recordListWriter.WriteLine(" |-| null");
                     }
+                    else
+                    {
+                        recordListWriter.WriteLine(" |-| " + extn);
+                    }
+
+                    readStartPos += 32;
                 }
             }
         }

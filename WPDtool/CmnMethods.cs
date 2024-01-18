@@ -11,6 +11,6 @@ namespace WPDtool
             Environment.Exit(0);
         }
 
-        public static string RecordsList = "!!WPD_Records";
+        public static string RecordsList = "!!WPD_Records.txt";
     }
 }
