@@ -56,7 +56,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\IMGBlibrary\IMGBlibrary.csproj">
+    <ProjectReference Include="..\dll libraries\IMGBlibrary\IMGBlibrary.csproj">
       <Project>{9bb17bc3-7183-4ece-92a2-30616edf4754}</Project>
       <Name>IMGBlibrary</Name>
     </ProjectReference>
