@@ -1,10 +1,8 @@
-﻿using BinaryReaderEx;
-using BinaryWriterEx;
-using IMGBlibrary;
-using StreamExtension;
+﻿using IMGBlibrary;
 using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace WPDtool
 {
@@ -21,11 +19,11 @@ namespace WPDtool
             var outWPDImgbFile = Path.Combine(inWPDExtractedDirRoot, Path.GetFileNameWithoutExtension(outWPDfileName) + ".imgb");
             var inWPDExtractedIMGBDir = Path.Combine(inWPDExtractedDirRoot, "_" + Path.GetFileNameWithoutExtension(outWPDfileName) + ".imgb");
 
-            var recordsListFile = Path.Combine(inWPDExtractedDir, CmnMethods.RecordsList);
+            var recordsListFile = Path.Combine(inWPDExtractedDir, WPDMethods.RecordsList);
 
             if (!File.Exists(recordsListFile))
             {
-                CmnMethods.ErrorExit($"Error: Missing file '{CmnMethods.RecordsList}' in extracted directory. Please ensure that the wpd file is unpacked properly with this tool.");
+                WPDMethods.ErrorExit($"Error: Missing file '{WPDMethods.RecordsList}' in extracted directory. Please ensure that the wpd file is unpacked properly with this tool.");
             }
 
             if (Directory.Exists(inWPDExtractedIMGBDir))
@@ -34,12 +32,12 @@ namespace WPDtool
                 {
                     if (outWPDImgbFile.EndsWith("ps3.imgb") || outWPDImgbFile.EndsWith("x360.imgb"))
                     {
-                        CmnMethods.ErrorExit("Error: Detected PS3 or Xbox 360 version's extracted IMGB directory. repacking is not supported for these two versions.");
+                        WPDMethods.ErrorExit("Error: Detected PS3 or Xbox 360 version's extracted IMGB directory. repacking is not supported for these two versions.");
                     }
 
                     if (!File.Exists(outWPDImgbFile))
                     {
-                        CmnMethods.ErrorExit($"Error: Paired imgb file for the extracted IMGB directory, is missing.\nPlease ensure that the paired imgb file is present next to the extracted imgb directory.");
+                        WPDMethods.ErrorExit($"Error: Paired imgb file for the extracted IMGB directory, is missing.\nPlease ensure that the paired imgb file is present next to the extracted imgb directory.");
                     }
                 }
             }
@@ -65,7 +63,7 @@ namespace WPDtool
 
                 if (!isValidNum)
                 {
-                    CmnMethods.ErrorExit($"Specified record count is invalid in the {CmnMethods.RecordsList} file");
+                    WPDMethods.ErrorExit($"Specified record count is invalid in the {WPDMethods.RecordsList} file");
                 }
 
                 Console.WriteLine("");
@@ -73,7 +71,7 @@ namespace WPDtool
 
                 // Write all record names and extensions
                 // into the new wpd file
-                using (var outWpdRecordsWriter = new StreamWriter(File.Open(outWPDfile, FileMode.OpenOrCreate, FileAccess.Write)))
+                using (var outWpdRecordsWriter = new StreamWriter(File.Open(outWPDfile, FileMode.OpenOrCreate, FileAccess.Write), WPDMethods.EncodingToUse))
                 {
                     outWpdRecordsWriter.Write("WPD");
                     PadNullBytes(outWpdRecordsWriter, 13);
@@ -83,8 +81,11 @@ namespace WPDtool
                     {
                         var currentRecordLineData = recordListReader.ReadLine().Split(dataSplitChar, StringSplitOptions.None);
 
-                        outWpdRecordsWriter.Write(currentRecordLineData[0]);
-                        PadNullBytes(outWpdRecordsWriter, (16 - (uint)currentRecordLineData[0].Length) + 8);
+                        var currentRecordNameArray = Encoding.UTF8.GetBytes(currentRecordLineData[0]);
+                        var convertedRecordNameArray = Encoding.Convert(Encoding.UTF8, WPDMethods.EncodingToUse, currentRecordNameArray);
+
+                        outWpdRecordsWriter.Write(WPDMethods.EncodingToUse.GetString(convertedRecordNameArray));
+                        PadNullBytes(outWpdRecordsWriter, (16 - (uint)convertedRecordNameArray.Length) + 8);
 
                         if (currentRecordLineData[1] == "null")
                         {
@@ -120,7 +121,10 @@ namespace WPDtool
                                 for (int o = 0; o < totalRecords; o++)
                                 {
                                     outWPDoffsetReader.BaseStream.Position = readStartPos;
-                                    var currentRecordName = outWPDoffsetReader.ReadStringTillNull();
+                                    var currentRecordNameArray = outWPDoffsetReader.ReadBytesTillNull().ToArray();
+                                    var currentRecordName = WPDMethods.EncodingToUse.GetString(currentRecordNameArray);
+
+                                    var recordNameAdjusted = WPDMethods.RemoveIllegalChars(currentRecordName);
 
                                     outWPDoffsetReader.BaseStream.Position = readStartPos + 24;
                                     var currentRecordExtn = "." + outWPDoffsetReader.ReadStringTillNull();
@@ -134,7 +138,7 @@ namespace WPDtool
                                     outWPDoffsetWriter.BaseStream.Position = writeStartPos;
                                     outWPDoffsetWriter.WriteBytesUInt32(recordDataStartPos, true);
 
-                                    var currentFile = Path.Combine(inWPDExtractedDir, currentRecordName + currentRecordExtn);
+                                    var currentFile = Path.Combine(inWPDExtractedDir, recordNameAdjusted + currentRecordExtn);
 
                                     if (IMGBVariables.ImgHeaderBlockExtns.Contains(currentRecordExtn))
                                     {
@@ -151,7 +155,8 @@ namespace WPDtool
 
                                     using (var currentFileStream = new FileStream(currentFile, FileMode.Open, FileAccess.Read))
                                     {
-                                        currentFileStream.ExCopyTo(outWPDdataStream, 0, currentFileSize);
+                                        currentFileStream.Position = 0;
+                                        currentFileStream.CopyStreamTo(outWPDdataStream, currentFileSize, false);
                                     }
 
                                     // Pad null bytes to make the next

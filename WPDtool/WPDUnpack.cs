@@ -1,6 +1,4 @@
-﻿using BinaryReaderEx;
-using IMGBlibrary;
-using StreamExtension;
+﻿using IMGBlibrary;
 using System;
 using System.IO;
 using System.Linq;
@@ -41,7 +39,7 @@ namespace WPDtool
 
                     if (!wpdHeader.Equals("WPD"))
                     {
-                        CmnMethods.ErrorExit("Error: Not a valid WPD file");
+                        WPDMethods.ErrorExit("Error: Not a valid WPD file");
                     }
 
                     wpdReader.BaseStream.Position = 4;
@@ -56,7 +54,10 @@ namespace WPDtool
                     for (int f = 0; f < totalRecords; f++)
                     {
                         wpdReader.BaseStream.Position = readStartPos;
-                        var currentRecordName = wpdReader.ReadStringTillNull();
+                        var currentRecordNameArray = wpdReader.ReadBytesTillNull().ToArray();
+                        var currentRecordName = WPDMethods.EncodingToUse.GetString(currentRecordNameArray);
+
+                        var recordNameAdjusted = WPDMethods.RemoveIllegalChars(currentRecordName);
 
                         wpdReader.BaseStream.Position = readStartPos + 16;
                         var currentRecordStart = wpdReader.ReadBytesUInt32(true);
@@ -68,12 +69,13 @@ namespace WPDtool
                         var currentRecordExtension = "." + wpdReader.ReadStringTillNull();
                         currentRecordExtension = currentRecordExtension == "." ? "" : currentRecordExtension;
 
-                        var currentOutFile = Path.Combine(extractWPDdir, currentRecordName + currentRecordExtension);
+                        var currentOutFile = Path.Combine(extractWPDdir, recordNameAdjusted + currentRecordExtension);
                         Console.WriteLine("Unpacking " + currentOutFile);
 
                         using (var ofs = new FileStream(currentOutFile, FileMode.OpenOrCreate, FileAccess.Write))
                         {
-                            wpdStream.ExCopyTo(ofs, currentRecordStart, currentRecordSize);
+                            wpdStream.Position = currentRecordStart;
+                            wpdStream.CopyStreamTo(ofs, currentRecordSize, false);
                         }
 
                         if (IMGBVariables.ImgHeaderBlockExtns.Contains(currentRecordExtension))
@@ -106,7 +108,7 @@ namespace WPDtool
 
         static void WriteRecordList(uint totalRecords, BinaryReader readerName, string extractWpdDir)
         {
-            using (var recordListWriter = new StreamWriter(Path.Combine(extractWpdDir, CmnMethods.RecordsList), true))
+            using (var recordListWriter = new StreamWriter(Path.Combine(extractWpdDir, WPDMethods.RecordsList), true))
             {
                 recordListWriter.WriteLine(totalRecords);
 
@@ -115,7 +117,9 @@ namespace WPDtool
                 for (int r = 0; r < totalRecords; r++)
                 {
                     readerName.BaseStream.Position = readStartPos;
-                    recordListWriter.Write(readerName.ReadStringTillNull());
+
+                    var currentRecordNameArray = readerName.ReadBytesTillNull().ToArray();
+                    recordListWriter.Write(WPDMethods.EncodingToUse.GetString(currentRecordNameArray));
 
                     readerName.BaseStream.Position = readStartPos + 24;
                     var extn = readerName.ReadStringTillNull();
