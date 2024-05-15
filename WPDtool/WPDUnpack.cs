@@ -44,18 +44,44 @@ namespace WPDtool
 
                     wpdReader.BaseStream.Position = 4;
                     var totalRecords = wpdReader.ReadBytesUInt32(true);
+                    uint readStartPos = 16;
 
                     Console.WriteLine("Writing record list....");
-                    WriteRecordList(totalRecords, wpdReader, extractWPDdir);
+                    using (var recordListWriter = new StreamWriter(Path.Combine(extractWPDdir, WPDMethods.RecordsList), true, Encoding.UTF8))
+                    {
+                        recordListWriter.WriteLine(totalRecords);
+
+                        for (int r = 0; r < totalRecords; r++)
+                        {
+                            wpdReader.BaseStream.Position = readStartPos;
+
+                            var currentRecordNameArray = wpdReader.ReadBytesTillNull().ToArray();
+                            recordListWriter.Write(Encoding.UTF8.GetString(currentRecordNameArray));
+
+                            wpdReader.BaseStream.Position = readStartPos + 24;
+                            var extn = wpdReader.ReadStringTillNull();
+
+                            if (extn == "")
+                            {
+                                recordListWriter.WriteLine(WPDMethods.DataSplitChar[0] + "null");
+                            }
+                            else
+                            {
+                                recordListWriter.WriteLine(WPDMethods.DataSplitChar[0] + extn);
+                            }
+
+                            readStartPos += 32;
+                        }
+                    }
+
                     Console.WriteLine("");
 
-
-                    uint readStartPos = 16;
+                    readStartPos = 16;
                     for (int f = 0; f < totalRecords; f++)
                     {
                         wpdReader.BaseStream.Position = readStartPos;
                         var currentRecordNameArray = wpdReader.ReadBytesTillNull().ToArray();
-                        var currentRecordName = WPDMethods.EncodingToUse.GetString(currentRecordNameArray);
+                        var currentRecordName = Encoding.UTF8.GetString(currentRecordNameArray);
 
                         var recordNameAdjusted = WPDMethods.RemoveIllegalChars(currentRecordName);
 
@@ -102,39 +128,6 @@ namespace WPDtool
             if (Directory.Exists(directoryName))
             {
                 Directory.Delete(directoryName, true);
-            }
-        }
-
-
-        static void WriteRecordList(uint totalRecords, BinaryReader readerName, string extractWpdDir)
-        {
-            using (var recordListWriter = new StreamWriter(Path.Combine(extractWpdDir, WPDMethods.RecordsList), true))
-            {
-                recordListWriter.WriteLine(totalRecords);
-
-
-                uint readStartPos = 16;
-                for (int r = 0; r < totalRecords; r++)
-                {
-                    readerName.BaseStream.Position = readStartPos;
-
-                    var currentRecordNameArray = readerName.ReadBytesTillNull().ToArray();
-                    recordListWriter.Write(WPDMethods.EncodingToUse.GetString(currentRecordNameArray));
-
-                    readerName.BaseStream.Position = readStartPos + 24;
-                    var extn = readerName.ReadStringTillNull();
-
-                    if (extn == "")
-                    {
-                        recordListWriter.WriteLine(" |-| null");
-                    }
-                    else
-                    {
-                        recordListWriter.WriteLine(" |-| " + extn);
-                    }
-
-                    readStartPos += 32;
-                }
             }
         }
     }

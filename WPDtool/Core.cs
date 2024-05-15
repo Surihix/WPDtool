@@ -79,7 +79,7 @@ namespace WPDtool
             }
         }
 
-        public enum ActionSwitches
+        enum ActionSwitches
         {
             u,
             r

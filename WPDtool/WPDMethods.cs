@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Text;
 
 namespace WPDtool
 {
@@ -10,13 +9,12 @@ namespace WPDtool
         {
             Console.WriteLine(errorMsg);
             Console.ReadLine();
-            Environment.Exit(0);
+            Environment.Exit(1);
         }
 
         public static string RecordsList = "!!WPD_Records.txt";
 
-        public static Encoding EncodingToUse = Encoding.GetEncoding(932);
-
+        public static string[] DataSplitChar = new string[] { " |-| " };
 
         static readonly char[] IllegalCharsArray = new char[] { '\\', '/', ':', '*', '?', '"', '<', '>', '|' };
 

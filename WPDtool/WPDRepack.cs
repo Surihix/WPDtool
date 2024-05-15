@@ -71,21 +71,19 @@ namespace WPDtool
 
                 // Write all record names and extensions
                 // into the new wpd file
-                using (var outWpdRecordsWriter = new StreamWriter(File.Open(outWPDfile, FileMode.OpenOrCreate, FileAccess.Write), WPDMethods.EncodingToUse))
+                using (var outWpdRecordsWriter = new StreamWriter(outWPDfile, true, new UTF8Encoding(false)))
                 {
                     outWpdRecordsWriter.Write("WPD");
                     PadNullBytes(outWpdRecordsWriter, 13);
 
-                    var dataSplitChar = new string[] { " |-| " };
                     for (int r = 0; r < totalRecords; r++)
                     {
-                        var currentRecordLineData = recordListReader.ReadLine().Split(dataSplitChar, StringSplitOptions.None);
+                        var currentRecordLineData = recordListReader.ReadLine().Split(WPDMethods.DataSplitChar, StringSplitOptions.None);
 
                         var currentRecordNameArray = Encoding.UTF8.GetBytes(currentRecordLineData[0]);
-                        var convertedRecordNameArray = Encoding.Convert(Encoding.UTF8, WPDMethods.EncodingToUse, currentRecordNameArray);
 
-                        outWpdRecordsWriter.Write(WPDMethods.EncodingToUse.GetString(convertedRecordNameArray));
-                        PadNullBytes(outWpdRecordsWriter, (16 - (uint)convertedRecordNameArray.Length) + 8);
+                        outWpdRecordsWriter.Write(Encoding.UTF8.GetString(currentRecordNameArray));
+                        PadNullBytes(outWpdRecordsWriter, (16 - (uint)currentRecordNameArray.Length) + 8);
 
                         if (currentRecordLineData[1] == "null")
                         {
@@ -122,7 +120,7 @@ namespace WPDtool
                                 {
                                     outWPDoffsetReader.BaseStream.Position = readStartPos;
                                     var currentRecordNameArray = outWPDoffsetReader.ReadBytesTillNull().ToArray();
-                                    var currentRecordName = WPDMethods.EncodingToUse.GetString(currentRecordNameArray);
+                                    var currentRecordName = Encoding.UTF8.GetString(currentRecordNameArray);
 
                                     var recordNameAdjusted = WPDMethods.RemoveIllegalChars(currentRecordName);
 
