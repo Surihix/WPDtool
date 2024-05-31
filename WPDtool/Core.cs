@@ -8,6 +8,8 @@ namespace WPDtool
     {
         static void Main(string[] args)
         {
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+
             if (args.Length < 2)
             {
                 WPDMethods.ErrorExit("Error: Enough arguments not specified\n" +
@@ -20,6 +22,7 @@ namespace WPDtool
 
 
             // Dll check
+            #if !DEBUG
             if (File.Exists("IMGBlibrary.dll"))
             {
                 using (var dllStream = new FileStream("IMGBlibrary.dll", FileMode.Open, FileAccess.Read))
@@ -40,6 +43,7 @@ namespace WPDtool
             {
                 WPDMethods.ErrorExit("Error: Missing 'IMGBlibrary.dll' file. please ensure that the dll file exists next to the program.");
             }
+            #endif
 
 
             try
