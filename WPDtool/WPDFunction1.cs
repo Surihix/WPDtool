@@ -1,7 +1,7 @@
-﻿using IMGBlibrary;
+﻿using IMGBlibrary.Support;
+using IMGBlibrary.Unpack;
 using System;
 using System.IO;
-using System.Linq;
 using System.Text;
 
 namespace WPDtool
@@ -20,10 +20,21 @@ namespace WPDtool
             DeleteDirIfExists(extractWPDdir);
             Directory.CreateDirectory(extractWPDdir);
 
+            var platform = IMGBEnums.Platforms.win32;
+
             if (File.Exists(inWPDimgbFile))
             {
                 DeleteDirIfExists(extractIMGBdir);
                 Directory.CreateDirectory(extractIMGBdir);
+
+                if (inWPDimgbFile.EndsWith("ps3.imgb"))
+                {
+                    platform = IMGBEnums.Platforms.ps3;
+                }
+                else if (wpdFileName.EndsWith("x360.imgb"))
+                {
+                    platform = IMGBEnums.Platforms.ps3;
+                }
             }
 
 
@@ -34,12 +45,11 @@ namespace WPDtool
                 using (var wpdReader = new BinaryReader(wpdStream))
                 {
                     wpdReader.BaseStream.Position = 0;
-                    var wpdChars = wpdReader.ReadBytes(4);
-                    var wpdHeader = Encoding.ASCII.GetString(wpdChars).Replace("\0", "");
+                    var wpdHeader = wpdReader.ReadBytesString(4, false);
 
                     if (!wpdHeader.Equals("WPD"))
                     {
-                        WPDMethods.ErrorExit("Error: Not a valid WPD file");
+                        SharedMethods.ErrorExit("Error: Not a valid WPD file");
                     }
 
                     wpdReader.BaseStream.Position = 4;
@@ -47,7 +57,7 @@ namespace WPDtool
                     uint readStartPos = 16;
 
                     Console.WriteLine("Writing record list....");
-                    using (var recordListWriter = new StreamWriter(Path.Combine(extractWPDdir, WPDMethods.RecordsList), true, Encoding.UTF8))
+                    using (var recordListWriter = new StreamWriter(Path.Combine(extractWPDdir, SharedMethods.RecordsList), true, Encoding.UTF8))
                     {
                         recordListWriter.WriteLine(totalRecords);
 
@@ -63,11 +73,11 @@ namespace WPDtool
 
                             if (extn == "")
                             {
-                                recordListWriter.WriteLine(WPDMethods.DataSplitChar[0] + "null");
+                                recordListWriter.WriteLine(SharedMethods.DataSplitChar[0] + "null");
                             }
                             else
                             {
-                                recordListWriter.WriteLine(WPDMethods.DataSplitChar[0] + extn);
+                                recordListWriter.WriteLine(SharedMethods.DataSplitChar[0] + extn);
                             }
 
                             readStartPos += 32;
@@ -83,7 +93,7 @@ namespace WPDtool
                         var currentRecordNameArray = wpdReader.ReadBytesTillNull().ToArray();
                         var currentRecordName = Encoding.UTF8.GetString(currentRecordNameArray);
 
-                        var recordNameAdjusted = WPDMethods.RemoveIllegalChars(currentRecordName);
+                        var recordNameAdjusted = SharedMethods.RemoveIllegalChars(currentRecordName);
 
                         wpdReader.BaseStream.Position = readStartPos + 16;
                         var currentRecordStart = wpdReader.ReadBytesUInt32(true);
@@ -104,11 +114,11 @@ namespace WPDtool
                             wpdStream.CopyStreamTo(ofs, currentRecordSize, false);
                         }
 
-                        if (IMGBVariables.ImgHeaderBlockExtns.Contains(currentRecordExtension))
+                        if (Enum.TryParse(currentRecordExtension.Replace(".", ""), false, out IMGBEnums.FileExtensions fileExtension) == true)
                         {
                             if (File.Exists(inWPDimgbFile))
                             {
-                                IMGBUnpack.UnpackIMGB(currentOutFile, inWPDimgbFile, extractIMGBdir);
+                                IMGBUnpack.UnpackIMGB(currentOutFile, inWPDimgbFile, extractIMGBdir, platform, true);
                             }
                         }
 

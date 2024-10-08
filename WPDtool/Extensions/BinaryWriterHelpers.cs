@@ -11,7 +11,8 @@ internal static class BinaryWriterHelpers
         writerName.Write(writeValueBuffer);
     }
 
-    static void ReverseIfBigEndian(bool isBigEndian, byte[] writeValueBuffer)
+
+    private static void ReverseIfBigEndian(bool isBigEndian, byte[] writeValueBuffer)
     {
         if (isBigEndian)
         {

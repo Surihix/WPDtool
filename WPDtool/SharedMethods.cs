@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace WPDtool
 {
-    internal class WPDMethods
+    internal class SharedMethods
     {
         public static void ErrorExit(string errorMsg)
         {

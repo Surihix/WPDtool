@@ -29,4 +29,13 @@ internal static class StreamHelpers
             }
         }
     }
+
+
+    public static void PadNull(this Stream stream, int padAmount)
+    {
+        for (int p = 0; p < padAmount; p++)
+        {
+            stream.WriteByte(0);
+        }
+    }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-internal static class BinaryReaderHelpers
+public static class BinaryReaderHelpers
 {
     public static uint ReadBytesUInt32(this BinaryReader reader, bool isBigEndian)
     {
@@ -13,17 +13,27 @@ internal static class BinaryReaderHelpers
         return BitConverter.ToUInt32(readValueBuffer, 0);
     }
 
-    public static string ReadStringTillNull(this BinaryReader readerName)
+
+    public static string ReadBytesString(this BinaryReader reader, int readCount, bool isBigEndian)
+    {
+        var readValueBuffer = reader.ReadBytes(readCount);
+        ReverseIfBigEndian(isBigEndian, readValueBuffer);
+
+        return Encoding.UTF8.GetString(readValueBuffer).Replace("\0", "");
+    }
+
+
+    public static string ReadStringTillNull(this BinaryReader reader)
     {
         var sb = new StringBuilder();
         char chars;
-        while ((chars = readerName.ReadChar()) != default)
+        while ((chars = reader.ReadChar()) != default)
         {
             sb.Append(chars);
         }
-
         return sb.ToString();
     }
+
 
     public static List<byte> ReadBytesTillNull(this BinaryReader reader)
     {
@@ -37,7 +47,8 @@ internal static class BinaryReaderHelpers
         return byteList;
     }
 
-    static void ReverseIfBigEndian(bool isBigEndian, byte[] readValueBuffer)
+
+    private static void ReverseIfBigEndian(bool isBigEndian, byte[] readValueBuffer)
     {
         if (isBigEndian)
         {

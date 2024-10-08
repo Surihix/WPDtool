@@ -1,7 +1,7 @@
-﻿using IMGBlibrary;
+﻿using IMGBlibrary.Repack;
+using IMGBlibrary.Support;
 using System;
 using System.IO;
-using System.Linq;
 using System.Text;
 
 namespace WPDtool
@@ -13,17 +13,21 @@ namespace WPDtool
             var inWPDExtractedDirRoot = Path.GetDirectoryName(inWPDExtractedDir);
 
             var outWPDfileName = Path.GetFileName(inWPDExtractedDir);
-            outWPDfileName = outWPDfileName.Remove(0, 1);
+
+            if (outWPDfileName.StartsWith("_"))
+            {
+                outWPDfileName = outWPDfileName.Remove(0, 1);
+            }
 
             var outWPDfile = Path.Combine(inWPDExtractedDirRoot, outWPDfileName);
             var outWPDImgbFile = Path.Combine(inWPDExtractedDirRoot, Path.GetFileNameWithoutExtension(outWPDfileName) + ".imgb");
             var inWPDExtractedIMGBDir = Path.Combine(inWPDExtractedDirRoot, "_" + Path.GetFileNameWithoutExtension(outWPDfileName) + ".imgb");
 
-            var recordsListFile = Path.Combine(inWPDExtractedDir, WPDMethods.RecordsList);
+            var recordsListFile = Path.Combine(inWPDExtractedDir, SharedMethods.RecordsList);
 
             if (!File.Exists(recordsListFile))
             {
-                WPDMethods.ErrorExit($"Error: Missing file '{WPDMethods.RecordsList}' in extracted directory. Please ensure that the wpd file is unpacked properly with this tool.");
+                SharedMethods.ErrorExit($"Error: Missing file '{SharedMethods.RecordsList}' in extracted directory. Please ensure that the wpd file is unpacked properly with this tool.");
             }
 
             if (Directory.Exists(inWPDExtractedIMGBDir))
@@ -32,12 +36,12 @@ namespace WPDtool
                 {
                     if (outWPDImgbFile.EndsWith("ps3.imgb") || outWPDImgbFile.EndsWith("x360.imgb"))
                     {
-                        WPDMethods.ErrorExit("Error: Detected PS3 or Xbox 360 version's extracted IMGB directory. repacking is not supported for these two versions.");
+                        SharedMethods.ErrorExit("Error: Detected PS3 or Xbox 360 version's extracted IMGB directory. repacking is not supported for these two versions.");
                     }
 
                     if (!File.Exists(outWPDImgbFile))
                     {
-                        WPDMethods.ErrorExit($"Error: Paired imgb file for the extracted IMGB directory, is missing.\nPlease ensure that the paired imgb file is present next to the extracted imgb directory.");
+                        SharedMethods.ErrorExit($"Error: Paired imgb file for the extracted IMGB directory, is missing.\nPlease ensure that the paired imgb file is present next to the extracted imgb directory.");
                     }
                 }
             }
@@ -56,6 +60,17 @@ namespace WPDtool
                 File.Copy(outWPDImgbFile, outWPDImgbFile + ".old");
             }
 
+            var platform = IMGBEnums.Platforms.win32;
+
+            if (outWPDfileName.EndsWith("ps3.xgr"))
+            {
+                platform = IMGBEnums.Platforms.ps3;
+            }
+            else if (outWPDfileName.EndsWith("x360.xgr"))
+            {
+                platform = IMGBEnums.Platforms.x360;
+            }
+
 
             using (var recordListReader = new StreamReader(recordsListFile))
             {
@@ -63,7 +78,7 @@ namespace WPDtool
 
                 if (!isValidNum)
                 {
-                    WPDMethods.ErrorExit($"Specified record count is invalid in the {WPDMethods.RecordsList} file");
+                    SharedMethods.ErrorExit($"Specified record count is invalid in the {SharedMethods.RecordsList} file");
                 }
 
                 Console.WriteLine("");
@@ -78,7 +93,7 @@ namespace WPDtool
 
                     for (int r = 0; r < totalRecords; r++)
                     {
-                        var currentRecordLineData = recordListReader.ReadLine().Split(WPDMethods.DataSplitChar, StringSplitOptions.None);
+                        var currentRecordLineData = recordListReader.ReadLine().Split(SharedMethods.DataSplitChar, StringSplitOptions.None);
 
                         var currentRecordNameArray = Encoding.UTF8.GetBytes(currentRecordLineData[0]);
 
@@ -122,7 +137,7 @@ namespace WPDtool
                                     var currentRecordNameArray = outWPDoffsetReader.ReadBytesTillNull().ToArray();
                                     var currentRecordName = Encoding.UTF8.GetString(currentRecordNameArray);
 
-                                    var recordNameAdjusted = WPDMethods.RemoveIllegalChars(currentRecordName);
+                                    var recordNameAdjusted = SharedMethods.RemoveIllegalChars(currentRecordName);
 
                                     outWPDoffsetReader.BaseStream.Position = readStartPos + 24;
                                     var currentRecordExtn = "." + outWPDoffsetReader.ReadStringTillNull();
@@ -138,11 +153,11 @@ namespace WPDtool
 
                                     var currentFile = Path.Combine(inWPDExtractedDir, recordNameAdjusted + currentRecordExtn);
 
-                                    if (IMGBVariables.ImgHeaderBlockExtns.Contains(currentRecordExtn))
+                                    if (Enum.TryParse(currentRecordExtn.Replace(".", ""), false, out IMGBEnums.FileExtensions fileExtension) == true)
                                     {
                                         if (Directory.Exists(inWPDExtractedIMGBDir))
                                         {
-                                            IMGBRepack.RepackIMGBType1(currentFile, outWPDImgbFile, inWPDExtractedIMGBDir);
+                                            IMGBRepack1.RepackIMGBType1(currentFile, outWPDImgbFile, inWPDExtractedIMGBDir, platform, true);
                                         }
                                     }
 
@@ -170,10 +185,7 @@ namespace WPDtool
                                         var nullBytesAmount = newPos - currentPos;
 
                                         outWPDdataStream.Seek(currentPos, SeekOrigin.Begin);
-                                        for (int p = 0; p < nullBytesAmount; p++)
-                                        {
-                                            outWPDdataStream.WriteByte(0);
-                                        }
+                                        outWPDdataStream.PadNull((int)nullBytesAmount);
                                     }
 
                                     Console.WriteLine("Repacked " + currentFile);
@@ -194,7 +206,7 @@ namespace WPDtool
         }
 
 
-        static void PadNullBytes(StreamWriter streamName, uint padding)
+        private static void PadNullBytes(StreamWriter streamName, uint padding)
         {
             for (int b = 0; b < padding; b++)
             {
@@ -203,7 +215,7 @@ namespace WPDtool
         }
 
 
-        static void IfFileExistsDel(string fileToDelete)
+        private static void IfFileExistsDel(string fileToDelete)
         {
             if (File.Exists(fileToDelete))
             {
