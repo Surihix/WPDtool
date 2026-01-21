@@ -60,15 +60,15 @@ namespace WPDtool
                 File.Copy(outWPDImgbFile, outWPDImgbFile + ".old");
             }
 
-            var platform = IMGBEnums.Platforms.win32;
+            var platform = IMGBFlags.Platforms.win32;
 
             if (outWPDfileName.EndsWith("ps3.xgr"))
             {
-                platform = IMGBEnums.Platforms.ps3;
+                platform = IMGBFlags.Platforms.ps3;
             }
             else if (outWPDfileName.EndsWith("x360.xgr"))
             {
-                platform = IMGBEnums.Platforms.x360;
+                platform = IMGBFlags.Platforms.x360;
             }
 
 
@@ -153,11 +153,11 @@ namespace WPDtool
 
                                     var currentFile = Path.Combine(inWPDExtractedDir, recordNameAdjusted + currentRecordExtn);
 
-                                    if (Enum.TryParse(currentRecordExtn.Replace(".", ""), false, out IMGBEnums.FileExtensions fileExtension) == true)
+                                    if (Enum.TryParse(currentRecordExtn.Replace(".", ""), false, out IMGBFlags.FileExtensions fileExtension) == true)
                                     {
                                         if (Directory.Exists(inWPDExtractedIMGBDir))
                                         {
-                                            IMGBRepack1.RepackIMGBType1(currentFile, outWPDImgbFile, inWPDExtractedIMGBDir, platform, true);
+                                            IMGBRepack1.RepackIMGBType1(currentFile, outWPDImgbFile, inWPDExtractedIMGBDir, platform);
                                         }
                                     }
 

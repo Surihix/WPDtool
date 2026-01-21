@@ -20,7 +20,7 @@ namespace WPDtool
             DeleteDirIfExists(extractWPDdir);
             Directory.CreateDirectory(extractWPDdir);
 
-            var platform = IMGBEnums.Platforms.win32;
+            var platform = IMGBFlags.Platforms.win32;
 
             if (File.Exists(inWPDimgbFile))
             {
@@ -29,11 +29,11 @@ namespace WPDtool
 
                 if (inWPDimgbFile.EndsWith("ps3.imgb"))
                 {
-                    platform = IMGBEnums.Platforms.ps3;
+                    platform = IMGBFlags.Platforms.ps3;
                 }
                 else if (wpdFileName.EndsWith("x360.imgb"))
                 {
-                    platform = IMGBEnums.Platforms.ps3;
+                    platform = IMGBFlags.Platforms.ps3;
                 }
             }
 
@@ -114,7 +114,7 @@ namespace WPDtool
                             wpdStream.CopyStreamTo(ofs, currentRecordSize, false);
                         }
 
-                        if (Enum.TryParse(currentRecordExtension.Replace(".", ""), false, out IMGBEnums.FileExtensions fileExtension) == true)
+                        if (Enum.TryParse(currentRecordExtension.Replace(".", ""), false, out IMGBFlags.FileExtensions fileExtension) == true)
                         {
                             if (File.Exists(inWPDimgbFile))
                             {
