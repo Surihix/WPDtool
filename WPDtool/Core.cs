@@ -29,7 +29,7 @@ namespace WPDtool
                         var hashArray = dllHash.ComputeHash(dllStream);
                         var computedHash = BitConverter.ToString(hashArray).Replace("-", "").ToLower();
 
-                        if (!computedHash.Equals("76899bd608be7e7af7d740ff90e06cdca0a88c8108b9bb1b49597610913eb7b3"))
+                        if (!computedHash.Equals("4fb1654ab6da60cf0ad8b3663c82de38d5d049c691f69daa589f8120be9a4d35"))
                         {
                             SharedMethods.ErrorExit("Error: 'IMGBlibrary.dll' file is corrupt. please check if the dll file is valid.");
                         }
